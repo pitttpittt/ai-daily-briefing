@@ -1,0 +1,48 @@
+# Configuration de ton briefing quotidien
+# Modifie ce fichier pour changer les sources, le ton, ou les destinataires
+
+briefing:
+  name: "AI Daily Briefing"
+  language: "fr"  # fr ou en
+  top_n: 5  # nombre d'items à garder dans le top
+  timezone: "Europe/Paris"
+
+# Sources à scraper. Ajoute/enlève selon tes besoins.
+sources:
+  - type: hackernews
+    enabled: true
+    top_stories: 30  # combien de stories on récupère avant ranking
+
+  - type: github_trending
+    enabled: true
+    languages: ["python", "typescript", "rust"]
+    period: "daily"
+
+  - type: arxiv
+    enabled: true
+    categories: ["cs.AI", "cs.LG", "cs.CL"]  # AI, ML, NLP
+    max_results: 20
+
+# Comment Claude doit résumer et ranker
+llm:
+  model: "claude-haiku-4-5-20251001"  # rapide et pas cher pour démarrer
+  max_tokens: 1024
+  ranking_prompt: |
+    Tu es un assistant qui sélectionne les actualités tech/IA les plus importantes du jour
+    pour un développeur senior. Critères de sélection :
+    - Impact technique réel (pas du buzz vide)
+    - Nouveauté (pas du déjà-vu)
+    - Pertinence pour quelqu'un qui code au quotidien
+    Pour chaque item retenu, écris un résumé en 2 phrases maximum, en français.
+
+# Où envoyer le briefing
+delivery:
+  email:
+    enabled: true  # passe à true quand t'as configuré SMTP
+    subject_prefix: "AI Briefing du"
+
+  slack:
+    enabled: false  # passe à true quand t'as configuré le webhook
+
+  console:
+    enabled: true  # toujours actif pour debug : affiche dans le terminal

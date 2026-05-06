@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ briefing_name }}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #1a202c;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 32px 24px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0 0 8px 0;
+            font-size: 26px;
+            font-weight: 700;
+        }
+        .header .date {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .intro {
+            padding: 20px 24px;
+            background-color: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+            color: #4a5568;
+        }
+        .item {
+            padding: 20px 24px;
+            border-bottom: 1px solid #edf2f7;
+        }
+        .item:last-child {
+            border-bottom: none;
+        }
+        .rank-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .rank-badge {
+            display: inline-block;
+            min-width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            background-color: #667eea;
+            color: white;
+            border-radius: 50%;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 0 8px;
+        }
+        .source-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background-color: #edf2f7;
+            color: #4a5568;
+        }
+        .source-tag.hackernews { background-color: #fed7aa; color: #7c2d12; }
+        .source-tag.arxiv { background-color: #c7d2fe; color: #3730a3; }
+        .source-tag.github_trending { background-color: #d1fae5; color: #064e3b; }
+        .item-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            color: #1a202c;
+        }
+        .item-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+        .item-title a:hover {
+            color: #667eea;
+        }
+        .why-important {
+            font-size: 13px;
+            color: #667eea;
+            font-style: italic;
+            margin: 6px 0 8px 0;
+        }
+        .summary {
+            font-size: 14px;
+            color: #2d3748;
+            margin: 8px 0;
+        }
+        .meta {
+            font-size: 12px;
+            color: #a0aec0;
+            margin-top: 8px;
+        }
+        .footer {
+            padding: 24px;
+            text-align: center;
+            font-size: 12px;
+            color: #a0aec0;
+            background-color: #f8fafc;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📰 {{ briefing_name }}</h1>
+            <div class="date">{{ generated_at.strftime("%A %d %B %Y") }}</div>
+        </div>
+
+        <div class="intro">
+            Voici les <strong>{{ ranked_items|length }} actualités tech/IA</strong>
+            les plus pertinentes du jour, sélectionnées et résumées pour vous.
+        </div>
+
+        {% for r in ranked_items %}
+        <div class="item">
+            <div class="rank-row">
+                <span class="rank-badge">#{{ r.rank }}</span>
+                <span class="source-tag {{ r.item.source }}">{{ r.item.source }}</span>
+                {% if r.item.score > 0 %}
+                <span class="meta">⭐ {{ r.item.score|int }}</span>
+                {% endif %}
+            </div>
+            <h2 class="item-title">
+                <a href="{{ r.item.url }}">{{ r.item.title }}</a>
+            </h2>
+            <div class="why-important">📌 {{ r.why_important }}</div>
+            <p class="summary">{{ r.llm_summary }}</p>
+            <div class="meta">
+                <a href="{{ r.item.url }}" style="color: #667eea; text-decoration: none;">
+                    Lire l'article →
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="footer">
+            Briefing généré automatiquement par
+            <a href="https://github.com">AI Daily Briefing</a><br>
+            Propulsé par Claude (Anthropic) ·
+            Sources : HackerNews, ArXiv, GitHub Trending
+        </div>
+    </div>
+</body>
+</html>

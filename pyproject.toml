@@ -1,0 +1,31 @@
+[project]
+name = "ai-daily-briefing"
+version = "0.1.0"
+description = "Automated daily AI/tech briefing"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=0.40.0",
+    "httpx>=0.27.0",
+    "pydantic>=2.9.0",
+    "pyyaml>=6.0.2",
+    "jinja2>=3.1.4",
+    "feedparser>=6.0.11",
+    "python-dotenv>=1.0.1",
+    "selectolax>=0.4.8",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.7.0",
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "mypy>=1.13.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM"]
