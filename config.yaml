@@ -38,7 +38,11 @@ llm:
 # Où envoyer le briefing
 delivery:
   email:
-    enabled: true  # passe à true quand t'as configuré SMTP
+    enabled: false  # SMTP désactivé (Resend prend le relais)
+    subject_prefix: "AI Briefing du"
+
+  resend:
+    enabled: true  # Service email transactionnel, pas de spam
     subject_prefix: "AI Briefing du"
 
   slack:

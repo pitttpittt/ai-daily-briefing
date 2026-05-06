@@ -13,6 +13,7 @@ dependencies = [
     "feedparser>=6.0.11",
     "python-dotenv>=1.0.1",
     "selectolax>=0.4.8",
+    "resend>=2.30.0",
 ]
 
 [dependency-groups]

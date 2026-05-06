@@ -195,8 +195,74 @@ class EmailDeliverer(Deliverer):
 
 # ----- Registry -----
 
+class ResendDeliverer(Deliverer):
+    """Envoie le briefing via Resend (https://resend.com).
+
+    Avantage vs SMTP Gmail : DKIM/SPF/DMARC pré-configurés côté Resend,
+    déliverabilité ~99% (jamais en spam).
+
+    Variables d'env :
+    - RESEND_API_KEY : clé API Resend
+    - RESEND_FROM : optionnel, sinon "onboarding@resend.dev" (sandbox)
+    - RESEND_TO : destinataire(s), virgule-séparés.
+                  En sandbox, doit être l'email du compte Resend.
+
+    NB : sans domaine custom vérifié, Resend autorise uniquement
+    l'envoi vers l'email du compte (sandbox de test).
+    """
+
+    name = "resend"
+
+    def send(
+        self,
+        ranked_items: list[RankedItem],
+        briefing_name: str,
+        generated_at: datetime,
+    ) -> None:
+        # Import paresseux : la lib n'est requise que si ce canal est utilisé
+        import resend
+
+        api_key = os.environ.get("RESEND_API_KEY", "")
+        sender = os.environ.get("RESEND_FROM", "onboarding@resend.dev")
+        recipients_raw = os.environ.get("RESEND_TO", "")
+
+        # Fallback : si RESEND_TO n'est pas défini, on utilise SMTP_TO
+        if not recipients_raw:
+            recipients_raw = os.environ.get("SMTP_TO", "")
+
+        if not api_key:
+            raise RuntimeError("ResendDeliverer : variable RESEND_API_KEY manquante")
+        if not recipients_raw:
+            raise RuntimeError(
+                "ResendDeliverer : RESEND_TO (ou SMTP_TO en fallback) manquant"
+            )
+
+        recipients = [r.strip() for r in recipients_raw.split(",") if r.strip()]
+
+        date_str = generated_at.strftime("%d/%m/%Y")
+        subject_prefix = self.config.subject_prefix or briefing_name
+        subject = f"{subject_prefix} {date_str}"
+
+        html_body = render_html_briefing(ranked_items, briefing_name, generated_at)
+
+        resend.api_key = api_key
+        result = resend.Emails.send({
+            "from": f"AI Daily Briefing <{sender}>",
+            "to": recipients,
+            "subject": subject,
+            "html": html_body,
+            "headers": {
+                "X-Mailer": "ai-daily-briefing/0.1",
+            },
+        })
+
+        email_id = result.get("id", "?") if isinstance(result, dict) else "?"
+        print(f"✉️  Resend : email envoyé à {len(recipients)} destinataire(s) (id={email_id})")
+
+
 DELIVERER_REGISTRY: dict[str, type[Deliverer]] = {
     "console": ConsoleDeliverer,
     "email": EmailDeliverer,
+    "resend": ResendDeliverer,
     # "slack": SlackDeliverer,  # à venir
 }

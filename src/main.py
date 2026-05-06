@@ -69,6 +69,7 @@ def deliver_briefing(config: Config, ranked_items, generated_at: datetime) -> No
     channels = {
         "console": config.delivery.console,
         "email": config.delivery.email,
+        "resend": config.delivery.resend,
         "slack": config.delivery.slack,
     }
 

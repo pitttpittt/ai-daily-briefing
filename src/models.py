@@ -65,6 +65,7 @@ class DeliveryChannelConfig(BaseModel):
 class DeliveryConfig(BaseModel):
     email: DeliveryChannelConfig = Field(default_factory=DeliveryChannelConfig)
     slack: DeliveryChannelConfig = Field(default_factory=DeliveryChannelConfig)
+    resend: DeliveryChannelConfig = Field(default_factory=DeliveryChannelConfig)
     console: DeliveryChannelConfig = Field(
         default_factory=lambda: DeliveryChannelConfig(enabled=True)
     )
